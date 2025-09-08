@@ -1,3 +1,18 @@
 body {
-  background-color: rgb(50, 49, 49);
+  background-color: rgb(203, 203, 203);
+}
+button {
+  color: rgb(71, 48, 183);
+  background-color: aqua;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: rgb(33, 106, 132);
+}
+div {
+  margin-top: 20px;
+  border: 2px;
+  border-radius: 5px;
 }
