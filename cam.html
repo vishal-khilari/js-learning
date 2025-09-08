@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Camera Capture to n8n</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    video, canvas {
+      width: 320px;
+      height: 240px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Capture Photo & Send to n8n</h2>
+  <video id="video" autoplay></video>
+  <br>
+  <button id="capture">📸 Capture</button>
+  <button id="send">📤 Send to n8n</button>
+  <br>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const captureBtn = document.getElementById('capture');
+    const sendBtn = document.getElementById('send');
+
+    // Replace this with your n8n webhook URL
+    const WEBHOOK_URL = "http://localhost:5678/webhook/photo";
+
+
+    // Ask for camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert("Error accessing camera: " + err);
+      });
+
+    // Capture photo
+    captureBtn.addEventListener('click', () => {
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    });
+
+    // Send photo
+    sendBtn.addEventListener('click', async () => {
+      canvas.toBlob(async (blob) => {
+        const formData = new FormData();
+        formData.append("file", blob, "photo.png");
+
+        try {
+          const response = await fetch(WEBHOOK_URL, {
+            method: "POST",
+            body: formData
+          });
+          if (response.ok) {
+            alert("✅ Sent to n8n successfully!");
+          } else {
+            alert("❌ Failed to send. Status: " + response.status);
+          }
+        } catch (error) {
+          alert("Error: " + error);
+        }
+      }, "image/png");
+    });
+  </script>
+</body>
+</html>
